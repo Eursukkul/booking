@@ -76,7 +76,9 @@ export function UserView() {
       {success ? <p className="alert success">{success}</p> : null}
 
       <section className="list-stack">
-        {concerts.map((concert) => {
+        {[...concerts]
+          .sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1))
+          .map((concert) => {
           const hasReserved = concert.reservedByUserIds.includes(DEMO_USER_ID);
 
           return (

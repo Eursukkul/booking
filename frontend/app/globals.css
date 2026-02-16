@@ -200,7 +200,7 @@ textarea {
   padding: 0.6rem 0.2rem;
   cursor: pointer;
   color: #5b6168;
-  font-size: 1.8rem;
+  font-size: 24px;
   line-height: 1.1;
 }
 
@@ -230,6 +230,7 @@ textarea {
 .concert-card h3 {
   margin: 0;
   color: #1082cf;
+  font-size: 32px;
 }
 
 .concert-card p {
@@ -260,6 +261,17 @@ textarea {
 
 .danger {
   background: #e64d4d;
+  color: #fff;
+}
+
+.btn-with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.btn-with-icon svg {
+  flex-shrink: 0;
 }
 
 .primary:disabled {
@@ -613,7 +625,7 @@ td {
   }
 
   .tabs button {
-    font-size: 1.5rem;
+    font-size: 24px;
   }
 
   .panel-form {
