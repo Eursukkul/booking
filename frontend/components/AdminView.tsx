@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import type { Concert, HistoryItem } from '../app.d';
-import { createConcert, deleteConcert, getConcerts, getHistory, getMetrics } from '../lib/api';
+import { createConcert, deleteConcert, getConcerts, getHistory } from '../lib/api';
 
 type AdminTab = 'overview' | 'create' | 'history';
 
@@ -95,23 +95,26 @@ function AdminIcon({ name }: { name: 'total' | 'user' | 'reserve' | 'cancel' | '
 export function AdminView({ tab, onTabChange }: AdminViewProps) {
   const [concerts, setConcerts] = useState<Concert[]>([]);
   const [history, setHistory] = useState<HistoryItem[]>([]);
-  const [metrics, setMetrics] = useState({ totalSeats: 0, reservedSeats: 0, canceledCount: 0 });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<Concert | null>(null);
+  const [selectedConcertIdForStats, setSelectedConcertIdForStats] = useState<string | null>(null);
   const [form, setForm] = useState({ name: '', description: '', totalSeats: '' });
+
+  const sortedConcerts = useMemo(
+    () => [...concerts].sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1)),
+    [concerts]
+  );
 
   const refresh = async () => {
     try {
       setError('');
-      const [nextConcerts, nextHistory, nextMetrics] = await Promise.all([
+      const [nextConcerts, nextHistory] = await Promise.all([
         getConcerts(),
-        getHistory(),
-        getMetrics()
+        getHistory()
       ]);
       setConcerts(nextConcerts);
       setHistory(nextHistory);
-      setMetrics(nextMetrics);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch data');
     }
@@ -129,19 +132,31 @@ export function AdminView({ tab, onTabChange }: AdminViewProps) {
     return () => clearTimeout(timer);
   }, [success]);
 
-  const stats = useMemo(
-    () => [
-      { label: 'Total of seats', value: metrics.totalSeats, color: 'blue', icon: 'total' as const },
-      {
-        label: 'Reserve',
-        value: metrics.reservedSeats,
-        color: 'green',
-        icon: 'reserve' as const
-      },
-      { label: 'Cancel', value: metrics.canceledCount, color: 'red', icon: 'cancel' as const }
-    ],
-    [metrics]
-  );
+  useEffect(() => {
+    const firstId = sortedConcerts[0]?.id ?? null;
+    if (!selectedConcertIdForStats || !sortedConcerts.some((c) => c.id === selectedConcertIdForStats)) {
+      setSelectedConcertIdForStats(firstId);
+    }
+  }, [sortedConcerts, selectedConcertIdForStats]);
+
+  const selectedConcertForStats = useMemo(() => {
+    const id = selectedConcertIdForStats ?? sortedConcerts[0]?.id;
+    return id ? sortedConcerts.find((c) => c.id === id) ?? null : null;
+  }, [sortedConcerts, selectedConcertIdForStats]);
+
+  const selectedConcertStats = useMemo(() => {
+    if (!selectedConcertForStats) {
+      return { totalSeats: 0, reserve: 0, cancel: 0 };
+    }
+    const cancelCount = history.filter(
+      (h) => h.concertId === selectedConcertForStats.id && h.action === 'cancel'
+    ).length;
+    return {
+      totalSeats: selectedConcertForStats.totalSeats,
+      reserve: selectedConcertForStats.reservedByUserIds.length,
+      cancel: cancelCount
+    };
+  }, [selectedConcertForStats, history]);
 
   const submitCreate = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -170,6 +185,9 @@ export function AdminView({ tab, onTabChange }: AdminViewProps) {
 
     try {
       await deleteConcert(deleteTarget.id);
+      if (selectedConcertIdForStats === deleteTarget.id) {
+        setSelectedConcertIdForStats(null);
+      }
       setDeleteTarget(null);
       setSuccess('Concert deleted successfully');
       await refresh();
@@ -183,16 +201,30 @@ export function AdminView({ tab, onTabChange }: AdminViewProps) {
       {error ? <p className="alert error">{error}</p> : null}
       {success ? <p className="alert success">{success}</p> : null}
 
-      <section className="stats-grid">
-        {stats.map((stat) => (
-          <article className={`stat-card ${stat.color}`} key={stat.label}>
+      <section className="stats-section">
+        <div className="stats-grid">
+          <article className="stat-card blue">
             <span className="stat-icon">
-              <AdminIcon name={stat.icon} />
+              <AdminIcon name="total" />
             </span>
-            <span>{stat.label}</span>
-            <strong>{stat.value}</strong>
+            <span>Total of seats</span>
+            <strong>{selectedConcertStats.totalSeats.toLocaleString()}</strong>
           </article>
-        ))}
+          <article className="stat-card green">
+            <span className="stat-icon">
+              <AdminIcon name="reserve" />
+            </span>
+            <span>Reserve</span>
+            <strong>{selectedConcertStats.reserve.toLocaleString()}</strong>
+          </article>
+          <article className="stat-card red">
+            <span className="stat-icon">
+              <AdminIcon name="cancel" />
+            </span>
+            <span>Cancel</span>
+            <strong>{selectedConcertStats.cancel.toLocaleString()}</strong>
+          </article>
+        </div>
       </section>
 
       {tab !== 'history' ? (
@@ -208,10 +240,20 @@ export function AdminView({ tab, onTabChange }: AdminViewProps) {
 
       {tab === 'overview' ? (
         <section className="list-stack">
-          {[...concerts]
-            .sort((a, b) => (a.createdAt > b.createdAt ? 1 : -1))
-            .map((concert) => (
-            <article key={concert.id} className="concert-card">
+          {sortedConcerts.map((concert) => (
+            <article
+              key={concert.id}
+              role="button"
+              tabIndex={0}
+              className={`concert-card ${selectedConcertForStats?.id === concert.id ? 'selected' : ''}`}
+              onClick={() => setSelectedConcertIdForStats(concert.id)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setSelectedConcertIdForStats(concert.id);
+                }
+              }}
+            >
               <h3>{concert.name}</h3>
               <p>{concert.description}</p>
               <div className="card-footer">
@@ -221,7 +263,14 @@ export function AdminView({ tab, onTabChange }: AdminViewProps) {
                   </span>
                   {concert.availableSeats.toLocaleString()} available
                 </span>
-                <button type="button" className="danger btn-with-icon" onClick={() => setDeleteTarget(concert)}>
+                <button
+                  type="button"
+                  className="danger btn-with-icon"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setDeleteTarget(concert);
+                  }}
+                >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden>
                     <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     <path d="M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

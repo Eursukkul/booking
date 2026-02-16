@@ -43,6 +43,7 @@ export class ConcertsService {
   deleteConcert(concertId: string): void {
     const concert = this.findConcertOrThrow(concertId);
     this.concerts = this.concerts.filter((item) => item.id !== concertId);
+    this.history = this.history.filter((entry) => entry.concertId !== concertId);
     this.logHistory('system', concert, 'delete');
   }
 
