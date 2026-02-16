@@ -246,7 +246,7 @@ textarea {
 
 .primary,
 .danger,
-.modal-actions button {
+.modal-actions button:not(.modal-btn-cancel) {
   border: none;
   border-radius: 0.35rem;
   padding: 0.45rem 0.75rem;
@@ -442,28 +442,49 @@ td {
 .modal {
   width: min(420px, 92vw);
   background: var(--panel);
-  border-radius: 0.45rem;
-  padding: 1rem;
+  border-radius: 8px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .modal h4 {
   margin-top: 0;
-}
-
-.modal h4 {
   text-align: center;
 }
 
-.modal-icon.danger {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 0.5rem;
-  color: var(--red);
+.delete-modal.delete-modal {
+  padding: 28px 24px 24px;
 }
 
-.modal-icon.danger svg {
-  width: 32px;
-  height: 32px;
+.delete-modal-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.delete-modal-icon svg {
+  width: 56px;
+  height: 56px;
+}
+
+.delete-modal-title {
+  margin: 0;
+  text-align: center;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.delete-modal-name {
+  margin: 8px 0 24px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
 }
 
 .modal-cancel {
@@ -476,10 +497,56 @@ td {
 }
 
 .modal-actions {
-  margin-top: 1rem;
+  margin-top: 0;
   display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.modal-btn-cancel {
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.modal-btn-delete {
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.modal-btn-delete:hover {
+  background: #e04a4a;
+}
+
+@media (max-width: 900px) {
+  .modal {
+    padding: 20px 18px;
+  }
+
+  .delete-modal-icon svg {
+    width: 48px;
+    height: 48px;
+  }
+
+  .delete-modal-title {
+    font-size: 1rem;
+  }
+
+  .delete-modal-name {
+    font-size: 0.9375rem;
+  }
 }
 
 .seat-count {

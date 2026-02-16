@@ -322,17 +322,27 @@ export function AdminView({ tab, onTabChange }: AdminViewProps) {
 
       {deleteTarget ? (
         <div className="modal-backdrop">
-          <div className="modal">
-            <div className="modal-icon danger" aria-hidden>
-              <AdminIcon name="cancel" />
+          <div className="modal delete-modal">
+            <div className="delete-modal-icon" aria-hidden>
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                <circle cx="24" cy="24" r="24" fill="#ef5656" />
+                <path
+                  d="M30 18L18 30M18 18l12 12"
+                  stroke="white"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </div>
-            <h4>Are you sure you want to delete &apos;{deleteTarget.name}&apos;?</h4>
+            <h4 className="delete-modal-title">Are you sure to delete?</h4>
+            <p className="delete-modal-name">&quot;{deleteTarget.name}&quot;</p>
             <div className="modal-actions">
-              <button type="button" className="modal-cancel" onClick={() => setDeleteTarget(null)}>
+              <button type="button" className="modal-btn-cancel" onClick={() => setDeleteTarget(null)}>
                 Cancel
               </button>
-              <button type="button" className="danger" onClick={confirmDelete}>
-                Confirm
+              <button type="button" className="modal-btn-delete" onClick={confirmDelete}>
+                Yes, Delete
               </button>
             </div>
           </div>
