@@ -1,4 +1,4 @@
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
 import { ConcertsService } from './concerts.service';
 
 describe('ConcertsService', () => {
@@ -68,6 +68,19 @@ describe('ConcertsService', () => {
     expect(() => service.cancelReservation(concert.id, 'user-1')).toThrow(NotFoundException);
   });
 
+  it('normalizes userId by trimming whitespace', () => {
+    const concert = service.createConcert({
+      name: 'Bastille',
+      description: 'Night show',
+      totalSeats: 2
+    });
+
+    service.reserveSeat(concert.id, '  user-1  ');
+
+    expect(() => service.reserveSeat(concert.id, 'user-1')).toThrow(ConflictException);
+    expect(() => service.cancelReservation(concert.id, '    ')).toThrow(BadRequestException);
+  });
+
   it('deletes concert', () => {
     const concert = service.createConcert({
       name: 'Muse',
@@ -77,5 +90,22 @@ describe('ConcertsService', () => {
 
     service.deleteConcert(concert.id);
     expect(service.getAllConcerts()).toHaveLength(0);
+  });
+
+  it('keeps reservation history after deleting concert', () => {
+    const concert = service.createConcert({
+      name: 'Lorde',
+      description: 'Summer concert',
+      totalSeats: 10
+    });
+
+    service.reserveSeat(concert.id, 'user-1');
+    service.cancelReservation(concert.id, 'user-1');
+    service.deleteConcert(concert.id);
+
+    const adminHistory = service.getAdminHistory();
+    expect(adminHistory.map((entry) => entry.action)).toEqual(
+      expect.arrayContaining(['create', 'reserve', 'cancel', 'delete'])
+    );
   });
 });

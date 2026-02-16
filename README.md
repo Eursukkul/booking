@@ -55,7 +55,7 @@ This repository contains a full-stack implementation of the concert reservation 
 - Frontend:
   - `app/page.tsx`: role switch and entry point
   - `components/AdminView.tsx`: admin dashboard, create/delete/history
-  - `components/UserView.tsx`: user reserve/cancel/history
+  - `components/UserView.tsx`: user concert list + reserve/cancel + own history
   - `lib/api.ts`: typed API client + error parsing
 
 ## API Endpoints
@@ -95,7 +95,7 @@ npm install
 npm run dev
 ```
 - Frontend: `http://localhost:3000`
-- Backend: `http://localhost:3001`
+- Backend: `http://localhost:3002`
 
 ### Run tests
 ```bash

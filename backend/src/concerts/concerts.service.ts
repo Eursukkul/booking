@@ -43,18 +43,18 @@ export class ConcertsService {
   deleteConcert(concertId: string): void {
     const concert = this.findConcertOrThrow(concertId);
     this.concerts = this.concerts.filter((item) => item.id !== concertId);
-    this.history = this.history.filter((entry) => entry.concertId !== concertId);
     this.logHistory('system', concert, 'delete');
   }
 
   reserveSeat(concertId: string, userId: string): void {
-    if (!userId.trim()) {
+    const normalizedUserId = userId.trim();
+    if (!normalizedUserId) {
       throw new BadRequestException('userId is required');
     }
 
     const concert = this.findConcertOrThrow(concertId);
 
-    if (concert.reservedByUserIds.includes(userId)) {
+    if (concert.reservedByUserIds.includes(normalizedUserId)) {
       throw new ConflictException('You already reserved this concert');
     }
 
@@ -62,20 +62,25 @@ export class ConcertsService {
       throw new ConflictException('No seats available for this concert');
     }
 
-    concert.reservedByUserIds.push(userId);
-    this.logHistory(userId, concert, 'reserve');
+    concert.reservedByUserIds.push(normalizedUserId);
+    this.logHistory(normalizedUserId, concert, 'reserve');
   }
 
   cancelReservation(concertId: string, userId: string): void {
+    const normalizedUserId = userId.trim();
+    if (!normalizedUserId) {
+      throw new BadRequestException('userId is required');
+    }
+
     const concert = this.findConcertOrThrow(concertId);
-    const existingIndex = concert.reservedByUserIds.indexOf(userId);
+    const existingIndex = concert.reservedByUserIds.indexOf(normalizedUserId);
 
     if (existingIndex === -1) {
       throw new NotFoundException('Reservation not found for this user');
     }
 
     concert.reservedByUserIds.splice(existingIndex, 1);
-    this.logHistory(userId, concert, 'cancel');
+    this.logHistory(normalizedUserId, concert, 'cancel');
   }
 
   getAdminHistory(): ReservationHistoryItem[] {
@@ -83,7 +88,12 @@ export class ConcertsService {
   }
 
   getUserHistory(userId: string): ReservationHistoryItem[] {
-    return this.getAdminHistory().filter((entry) => entry.userId === userId);
+    const normalizedUserId = userId.trim();
+    if (!normalizedUserId) {
+      throw new BadRequestException('userId is required');
+    }
+
+    return this.getAdminHistory().filter((entry) => entry.userId === normalizedUserId);
   }
 
   getDashboardMetrics() {
