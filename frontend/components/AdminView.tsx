@@ -14,20 +14,15 @@ interface AdminViewProps {
 function AdminIcon({ name }: { name: 'total' | 'user' | 'reserve' | 'cancel' | 'save' }) {
   if (name === 'total') {
     return (
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <circle cx="24" cy="16" r="8" stroke="currentColor" strokeWidth="2.5" fill="none" />
         <path
-          d="M33.3337 35V31.6667C33.3337 29.8986 32.6313 28.2029 31.381 26.9526C30.1308 25.7024 28.4351 25 26.667 25H13.3337C11.5655 25 9.86986 25.7024 8.61961 26.9526C7.36937 28.2029 6.66699 29.8986 6.66699 31.6667V35"
+          d="M8 42C8 31 16 26 24 26C32 26 40 31 40 42"
           stroke="currentColor"
-          strokeWidth="2"
+          strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-        />
-        <path
-          d="M19.9997 18.3333C23.6816 18.3333 26.6663 15.3486 26.6663 11.6667C26.6663 7.98477 23.6816 5 19.9997 5C16.3178 5 13.333 7.98477 13.333 11.6667C13.333 15.3486 16.3178 18.3333 19.9997 18.3333Z"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          fill="none"
         />
       </svg>
     );
@@ -54,45 +49,34 @@ function AdminIcon({ name }: { name: 'total' | 'user' | 'reserve' | 'cancel' | '
   }
   if (name === 'reserve') {
     return (
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <circle cx="24" cy="16" r="10" stroke="currentColor" strokeWidth="2.5" fill="none" />
         <path
-          d="M19.9997 24.9993C26.443 24.9993 31.6663 19.776 31.6663 13.3327C31.6663 6.88936 26.443 1.66602 19.9997 1.66602C13.5564 1.66602 8.33301 6.88936 8.33301 13.3327C8.33301 19.776 13.5564 24.9993 19.9997 24.9993Z"
+          d="M12 42L14 28L20 32L24 26L28 32L34 28L36 42H12Z"
           stroke="currentColor"
-          strokeWidth="2"
+          strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
-        />
-        <path
-          d="M13.6837 23.1495L11.667 38.3328L20.0003 33.3328L28.3337 38.3328L26.317 23.1328"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          fill="none"
         />
       </svg>
     );
   }
   if (name === 'cancel') {
     return (
-      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <circle cx="24" cy="24" r="18" stroke="currentColor" strokeWidth="2.5" fill="none" />
         <path
-          d="M19.9997 36.6673C29.2044 36.6673 36.6663 29.2054 36.6663 20.0007C36.6663 10.7959 29.2044 3.33398 19.9997 3.33398C10.7949 3.33398 3.33301 10.7959 3.33301 20.0007C3.33301 29.2054 10.7949 36.6673 19.9997 36.6673Z"
+          d="M17 17L31 31"
           stroke="currentColor"
-          strokeWidth="2"
+          strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
         <path
-          d="M25 15L15 25"
+          d="M31 17L17 31"
           stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M15 15L25 25"
-          stroke="currentColor"
-          strokeWidth="2"
+          strokeWidth="2.5"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
@@ -137,16 +121,24 @@ export function AdminView({ tab, onTabChange }: AdminViewProps) {
     void refresh();
   }, []);
 
+  useEffect(() => {
+    if (!success) {
+      return;
+    }
+    const timer = setTimeout(() => setSuccess(''), 3000);
+    return () => clearTimeout(timer);
+  }, [success]);
+
   const stats = useMemo(
     () => [
       { label: 'Total of seats', value: metrics.totalSeats, color: 'blue', icon: 'total' as const },
       {
-        label: 'Available',
-        value: metrics.totalSeats - metrics.reservedSeats,
+        label: 'Reserve',
+        value: metrics.reservedSeats,
         color: 'green',
         icon: 'reserve' as const
       },
-      { label: 'Cancelled', value: metrics.canceledCount, color: 'red', icon: 'cancel' as const }
+      { label: 'Cancel', value: metrics.canceledCount, color: 'red', icon: 'cancel' as const }
     ],
     [metrics]
   );
@@ -239,6 +231,8 @@ export function AdminView({ tab, onTabChange }: AdminViewProps) {
 
       {tab === 'create' ? (
         <form className="panel-form" onSubmit={submitCreate}>
+          <h3 className="form-title">Create</h3>
+          <div className="form-divider" />
           <div className="form-row">
             <label>
               Concert Name
@@ -251,15 +245,20 @@ export function AdminView({ tab, onTabChange }: AdminViewProps) {
             </label>
             <label className="total-seat-field">
               Total of seat
-              <input
-                className="total-seat-input"
-                required
-                type="number"
-                min={1}
-                placeholder="500"
-                value={form.totalSeats}
-                onChange={(event) => setForm((prev) => ({ ...prev, totalSeats: event.target.value }))}
-              />
+              <span className="input-with-icon">
+                <input
+                  className="total-seat-input"
+                  required
+                  type="number"
+                  min={1}
+                  placeholder="500"
+                  value={form.totalSeats}
+                  onChange={(event) => setForm((prev) => ({ ...prev, totalSeats: event.target.value }))}
+                />
+                <span className="input-icon" aria-hidden>
+                  <AdminIcon name="user" />
+                </span>
+              </span>
             </label>
           </div>
           <label>
