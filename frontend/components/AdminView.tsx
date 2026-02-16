@@ -214,7 +214,12 @@ export function AdminView({ tab, onTabChange }: AdminViewProps) {
               <h3>{concert.name}</h3>
               <p>{concert.description}</p>
               <div className="card-footer">
-                <span>{concert.availableSeats.toLocaleString()} seats available</span>
+                <span className="seat-count">
+                  <span className="seat-icon" aria-hidden>
+                    <AdminIcon name="reserve" />
+                  </span>
+                  {concert.availableSeats.toLocaleString()}
+                </span>
                 <button type="button" className="danger" onClick={() => setDeleteTarget(concert)}>
                   Delete
                 </button>
@@ -227,7 +232,6 @@ export function AdminView({ tab, onTabChange }: AdminViewProps) {
 
       {tab === 'create' ? (
         <form className="panel-form" onSubmit={submitCreate}>
-          <h3 className="form-title">Create</h3>
           <div className="form-row">
             <label>
               Concert Name
@@ -240,19 +244,14 @@ export function AdminView({ tab, onTabChange }: AdminViewProps) {
             </label>
             <label>
               Total of seat
-              <span className="input-with-icon">
-                <input
-                  required
-                  type="number"
-                  min={1}
-                  placeholder="500"
-                  value={form.totalSeats}
-                  onChange={(event) => setForm((prev) => ({ ...prev, totalSeats: event.target.value }))}
-                />
-                <span className="input-icon">
-                  <AdminIcon name="user" />
-                </span>
-              </span>
+              <input
+                required
+                type="number"
+                min={1}
+                placeholder="500"
+                value={form.totalSeats}
+                onChange={(event) => setForm((prev) => ({ ...prev, totalSeats: event.target.value }))}
+              />
             </label>
           </div>
           <label>
@@ -265,6 +264,9 @@ export function AdminView({ tab, onTabChange }: AdminViewProps) {
             />
           </label>
           <div className="form-actions">
+            <button type="button" className="modal-cancel" onClick={() => onTabChange('overview')}>
+              Cancel
+            </button>
             <button type="submit" className="primary">
               <span className="icon-inline">
                 <AdminIcon name="save" />
@@ -280,19 +282,30 @@ export function AdminView({ tab, onTabChange }: AdminViewProps) {
           <table>
             <thead>
               <tr>
-                <th>Date time</th>
+                <th>Date Time</th>
                 <th>Username</th>
-                <th>Concert name</th>
+                <th>Concert Name</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {history.map((item) => (
                 <tr key={item.id}>
-                  <td>{new Date(item.timestamp).toLocaleString()}</td>
+                  <td>
+                    {(() => {
+                      const d = new Date(item.timestamp);
+                      const dd = String(d.getDate()).padStart(2, '0');
+                      const mm = String(d.getMonth() + 1).padStart(2, '0');
+                      const yyyy = d.getFullYear();
+                      const h = String(d.getHours()).padStart(2, '0');
+                      const min = String(d.getMinutes()).padStart(2, '0');
+                      const sec = String(d.getSeconds()).padStart(2, '0');
+                      return `${dd}/${mm}/${yyyy} ${h}:${min}:${sec}`;
+                    })()}
+                  </td>
                   <td>{item.userId}</td>
                   <td>{item.concertName}</td>
-                  <td>{item.action}</td>
+                  <td>{item.action === 'reserve' ? 'Booked' : item.action === 'cancel' ? 'Canceled' : item.action}</td>
                 </tr>
               ))}
             </tbody>
@@ -303,14 +316,16 @@ export function AdminView({ tab, onTabChange }: AdminViewProps) {
       {deleteTarget ? (
         <div className="modal-backdrop">
           <div className="modal">
-            <h4>Are you sure to delete?</h4>
-            <p>{deleteTarget.name}</p>
+            <div className="modal-icon danger" aria-hidden>
+              <AdminIcon name="cancel" />
+            </div>
+            <h4>Are you sure you want to delete &apos;{deleteTarget.name}&apos;?</h4>
             <div className="modal-actions">
-              <button type="button" onClick={() => setDeleteTarget(null)}>
+              <button type="button" className="modal-cancel" onClick={() => setDeleteTarget(null)}>
                 Cancel
               </button>
               <button type="button" className="danger" onClick={confirmDelete}>
-                Yes, Delete
+                Confirm
               </button>
             </div>
           </div>

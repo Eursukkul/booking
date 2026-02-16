@@ -56,6 +56,10 @@ textarea {
   gap: 0.4rem;
 }
 
+.sidebar-switch {
+  align-self: flex-start;
+}
+
 .nav-item,
 .ghost-btn {
   border: 1px solid transparent;
@@ -81,6 +85,10 @@ textarea {
 
 .ghost-btn {
   border-color: var(--line);
+}
+
+.ghost-btn.sidebar-switch {
+  border: none;
 }
 
 .ghost-btn.inline {
@@ -302,6 +310,7 @@ textarea {
 .form-actions {
   display: flex;
   justify-content: flex-end;
+  gap: 0.5rem;
 }
 
 .form-actions .primary {
@@ -365,11 +374,52 @@ td {
   margin-top: 0;
 }
 
+.modal h4 {
+  text-align: center;
+}
+
+.modal-icon.danger {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  color: var(--red);
+}
+
+.modal-icon.danger svg {
+  width: 32px;
+  height: 32px;
+}
+
+.modal-cancel {
+  background: #e5e7eb;
+  color: #374151;
+  border: none;
+  border-radius: 0.35rem;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+}
+
 .modal-actions {
   margin-top: 1rem;
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
+}
+
+.seat-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.seat-icon {
+  display: inline-flex;
+}
+
+.seat-icon svg {
+  width: 20px;
+  height: 20px;
+  color: #4b5563;
 }
 
 .empty {

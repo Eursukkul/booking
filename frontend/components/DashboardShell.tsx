@@ -129,13 +129,13 @@ export function DashboardShell({
           ))}
           </nav>
         ) : null}
+        <button className="ghost-btn sidebar-switch" type="button" onClick={onSwitchRole}>
+          <span className="icon-inline">
+            <SidebarIcon name="switch" />
+          </span>
+          {switchLabel}
+        </button>
         <div className="sidebar-bottom">
-          <button className="ghost-btn" type="button" onClick={onSwitchRole}>
-            <span className="icon-inline">
-              <SidebarIcon name="switch" />
-            </span>
-            {switchLabel}
-          </button>
           <button className="logout-btn" type="button">
             <span className="icon-inline">
               <SidebarIcon name="logout" />
