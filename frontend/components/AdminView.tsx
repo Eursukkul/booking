@@ -201,31 +201,33 @@ export function AdminView({ tab, onTabChange }: AdminViewProps) {
       {error ? <p className="alert error">{error}</p> : null}
       {success ? <p className="alert success">{success}</p> : null}
 
-      <section className="stats-section">
-        <div className="stats-grid">
-          <article className="stat-card blue">
-            <span className="stat-icon">
-              <AdminIcon name="total" />
-            </span>
-            <span>Total of seats</span>
-            <strong>{selectedConcertStats.totalSeats.toLocaleString()}</strong>
-          </article>
-          <article className="stat-card green">
-            <span className="stat-icon">
-              <AdminIcon name="reserve" />
-            </span>
-            <span>Reserve</span>
-            <strong>{selectedConcertStats.reserve.toLocaleString()}</strong>
-          </article>
-          <article className="stat-card red">
-            <span className="stat-icon">
-              <AdminIcon name="cancel" />
-            </span>
-            <span>Cancel</span>
-            <strong>{selectedConcertStats.cancel.toLocaleString()}</strong>
-          </article>
-        </div>
-      </section>
+      {tab !== 'history' ? (
+        <section className="stats-section">
+          <div className="stats-grid">
+            <article className="stat-card blue">
+              <span className="stat-icon">
+                <AdminIcon name="total" />
+              </span>
+              <span>Total of seats</span>
+              <strong>{selectedConcertStats.totalSeats.toLocaleString()}</strong>
+            </article>
+            <article className="stat-card green">
+              <span className="stat-icon">
+                <AdminIcon name="reserve" />
+              </span>
+              <span>Reserve</span>
+              <strong>{selectedConcertStats.reserve.toLocaleString()}</strong>
+            </article>
+            <article className="stat-card red">
+              <span className="stat-icon">
+                <AdminIcon name="cancel" />
+              </span>
+              <span>Cancel</span>
+              <strong>{selectedConcertStats.cancel.toLocaleString()}</strong>
+            </article>
+          </div>
+        </section>
+      ) : null}
 
       {tab !== 'history' ? (
         <div className="tabs">
@@ -342,13 +344,13 @@ export function AdminView({ tab, onTabChange }: AdminViewProps) {
       ) : null}
 
       {tab === 'history' ? (
-        <div className="table-wrap">
+        <div className="table-wrap history-table">
           <table>
             <thead>
               <tr>
-                <th>Date Time</th>
+                <th>Date time</th>
                 <th>Username</th>
-                <th>Concert Name</th>
+                <th>Concert name</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -369,7 +371,17 @@ export function AdminView({ tab, onTabChange }: AdminViewProps) {
                   </td>
                   <td>{item.userId}</td>
                   <td>{item.concertName}</td>
-                  <td>{item.action === 'reserve' ? 'Booked' : item.action === 'cancel' ? 'Canceled' : item.action}</td>
+                  <td>
+                    {item.action === 'reserve'
+                      ? 'Reserve'
+                      : item.action === 'cancel'
+                        ? 'Cancel'
+                        : item.action === 'create'
+                          ? 'Create'
+                          : item.action === 'delete'
+                            ? 'Delete'
+                            : item.action}
+                  </td>
                 </tr>
               ))}
             </tbody>
