@@ -14,9 +14,16 @@ interface AdminViewProps {
 function AdminIcon({ name }: { name: 'total' | 'user' | 'reserve' | 'cancel' | 'save' }) {
   if (name === 'total') {
     return (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
         <path
-          d="M7.66667 14.3333C11.3486 14.3333 14.3333 11.3486 14.3333 7.66667C14.3333 3.98477 11.3486 1 7.66667 1C3.98477 1 1 3.98477 1 7.66667C1 11.3486 3.98477 14.3333 7.66667 14.3333Z"
+          d="M33.3337 35V31.6667C33.3337 29.8986 32.6313 28.2029 31.381 26.9526C30.1308 25.7024 28.4351 25 26.667 25H13.3337C11.5655 25 9.86986 25.7024 8.61961 26.9526C7.36937 28.2029 6.66699 29.8986 6.66699 31.6667V35"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M19.9997 18.3333C23.6816 18.3333 26.6663 15.3486 26.6663 11.6667C26.6663 7.98477 23.6816 5 19.9997 5C16.3178 5 13.333 7.98477 13.333 11.6667C13.333 15.3486 16.3178 18.3333 19.9997 18.3333Z"
           stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
@@ -242,9 +249,10 @@ export function AdminView({ tab, onTabChange }: AdminViewProps) {
                 onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
               />
             </label>
-            <label>
+            <label className="total-seat-field">
               Total of seat
               <input
+                className="total-seat-input"
                 required
                 type="number"
                 min={1}

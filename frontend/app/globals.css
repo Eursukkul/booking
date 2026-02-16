@@ -265,7 +265,7 @@ textarea {
 
 .form-row {
   display: grid;
-  grid-template-columns: 1fr 180px;
+  grid-template-columns: 1fr 1fr;
   gap: 0.6rem;
 }
 
@@ -280,6 +280,20 @@ textarea {
   border: 1px solid #ccd3dd;
   border-radius: 0.35rem;
   padding: 0.45rem;
+}
+
+.panel-form input {
+  min-height: 48px;
+}
+
+.panel-form label.total-seat-field {
+  font-size: 1rem;
+  gap: 0.45rem;
+}
+
+.panel-form input.total-seat-input {
+  font-size: 1rem;
+  padding: 0.55rem 0.8rem;
 }
 
 .input-with-icon {
