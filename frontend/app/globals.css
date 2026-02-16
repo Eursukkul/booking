@@ -404,12 +404,19 @@ td {
 }
 
 .alert {
-  margin: 0 0 0.7rem;
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  margin: 0;
   padding: 0.8rem 0.95rem;
   border-radius: 0.4rem;
   font-size: 1.05rem;
   line-height: 1.25;
   border: 1px solid transparent;
+  min-width: 280px;
+  max-width: min(420px, calc(100vw - 2rem));
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
 }
 
 .alert.error {
